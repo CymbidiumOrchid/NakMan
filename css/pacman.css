@@ -71,11 +71,13 @@ div
 
 .pip
 {
-    background: white;
+    background: url('../img/visual.png') no-repeat #fff;
     display: block;
     left: 0px;
     position: absolute;
     top: 0px;
+    width: 12px!important;
+    height: 12px!important;
 }
 
 #container
