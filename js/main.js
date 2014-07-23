@@ -254,8 +254,16 @@ function updateGhost(ghostElement)
         else if(ghostElement.chasing)
         {
             var node = nodes[Math.floor(Math.random() * nodes.length)];
-            ghostElement.dirX = node[2];
-            ghostElement.dirY = node[3];
+            var deltaY = player.yp < ghostElement.yp ? -1 : 1;
+            var deltaX = player.xp < ghostElement.xp ? -1 : 1;
+            if (nextTileFree) {
+                ghostElement.dirX = deltaX;
+                ghostElement.dirY = deltaY;
+            } else {
+                ghostElement.dirX = nodes[2];
+                ghostElement.dirY = nodes[3];
+            }
+
         }
         else
         {
