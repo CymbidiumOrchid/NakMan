@@ -15,6 +15,11 @@ var gameInterval,
         
 // enemies config
         GHOSTS_COUNT = 3,
+        GHOSTS_AVATARS = [
+            'img/ghost.png',
+            'img/ghost.png',
+            'img/ghost.png'
+        ],
 
 // timestep
         t = 0,
@@ -38,8 +43,11 @@ var gameInterval,
 var playerImage = assetImages["player"] = new Image();
 assetImages["player"].src = "img/player2.png";
 
-var ghostImage = assetImages["ghost"] = new Image();
-assetImages["ghost"].src = "img/ghost.png";
+var ghostImage = assetImages["ghost"] = [];
+for (var i = 0; i < GHOSTS_COUNT; i++) {
+    ghostImage[i] = assetImages["ghost"][i] = new Image();
+    assetImages["ghost"][i].src = GHOSTS_AVATARS[i];
+}
 
 var levelImage = assetImages["level"] = new Image();
 assetImages["level"].src = "img/map.png";
@@ -77,7 +85,7 @@ function init()
     // ghost
     ghosts = [];
     for (var i = 1; i <= GHOSTS_COUNT; i++) {
-        ghosts.push(new Ghost(CELL_SIZE * (11+1), CELL_SIZE * (5+i), ghostImage));
+        ghosts.push(new Ghost(CELL_SIZE * (11+1), CELL_SIZE * (5+i), ghostImage[i-1]));
         
     }
     
