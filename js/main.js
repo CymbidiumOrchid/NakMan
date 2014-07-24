@@ -14,11 +14,12 @@ var gameInterval,
         GRID_HEIGHT = SCREEN_HEIGHT / CELL_SIZE,
         
 // enemies config
-        GHOSTS_COUNT = 3,
+        GHOSTS_COUNT = 4,
         GHOSTS_AVATARS = [
-            'img/ghost.png',
-            'img/ghost.png',
-            'img/ghost.png'
+            'img/alex.png',
+            'img/vladog.png',
+            'img/vladok.png',
+			'img/petya.png'
         ],
 
 // timestep
@@ -85,7 +86,7 @@ function init()
     // ghost
     ghosts = [];
     for (var i = 1; i <= GHOSTS_COUNT; i++) {
-        ghosts.push(new Ghost(CELL_SIZE * (11+1), CELL_SIZE * (5+i), ghostImage[i-1]));
+        ghosts.push(new Ghost(CELL_SIZE * (13), CELL_SIZE * (3+i), ghostImage[i-1]));
         
     }
     
