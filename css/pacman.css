@@ -9,6 +9,11 @@ body
     font-size: 12px;
 }
 
+#wrapper {
+    width: 95%;
+    margin: 20px auto 0 ;
+}
+
 h1 {
     font-size: 120px;
     margin: 0;

@@ -122,7 +122,7 @@ function init()
         makeControls();
     }
 
-    showInfo("<p>" + ((isTouch) ? "TOUCH" : "CLICK") + " TO START</p>");
+    showInfo("<p>" + ((isTouch) ? "TOUCH" : "цъкни button") + " to start</p>");
 }
 
 function run()
@@ -171,7 +171,7 @@ function update()
                 level.pips[cx][cy].munch();
                 level.cellData[cx][cy] = 2;
                 ++score;
-                document.getElementById("score").innerHTML = "SCORE: " + score;
+                document.getElementById("score").innerHTML = "Visual Studious изядени: " + score;
                 if(score == level.totalPips)
                 {
                     onGameOver(true);
@@ -307,11 +307,11 @@ function onGameOver(complete)
     var str;
     if(complete)
     {
-        str = "<h1>You Win!</h1><p>" + ((isTouch) ? "TOUCH" : "CLICK") + " TO PLAY AGAIN</p>";
+        str = "<h1>You win! There is no отпуска for them!</h1><p>" + ((isTouch) ? "TOUCH" : "цъкни button") + " to eat again</p>";
     }
     else
     {
-        str = "<h1>Game<br>Over</h1><p>" + ((isTouch) ? "TOUCH" : "CLICK") + " TO RESTART</p>";
+        str = "<h1>Payday!!!</h1><br /><br /><p>Give us парите!</p><p>We are going в отпуск на мурету!</p><br /><p>" + ((isTouch) ? "touch" : "цъкни button") + " to eat again</p>";
     }
 
     showInfo(str);
@@ -429,7 +429,7 @@ function startGame()
 {
     if(isPlaying) return;
     isPlaying = true;
-    document.getElementById("score").innerHTML = "SCORE: " + score;
+    document.getElementById("score").innerHTML = "Visual Studios изядени: " + score;
     resetGame();
     gameInterval = setInterval(run, 1);
 }
