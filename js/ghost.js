@@ -12,7 +12,7 @@ function Ghost(x, y, img)
     var dirY = this.dirY = 0;
 
     this.chaseTime = 0;
-    this.idleTime = 15;
+    this.idleTime = 13;
     this.chasing = false;
     var scope = this;
     this.interval = setInterval(function(){scope.changeChase()}, 1000 * this.idleTime);

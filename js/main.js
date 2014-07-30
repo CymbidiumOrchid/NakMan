@@ -86,7 +86,7 @@ function init()
     // ghost
     ghosts = [];
     for (var i = 1; i <= GHOSTS_COUNT; i++) {
-        ghosts.push(new Ghost(CELL_SIZE * (13), CELL_SIZE * (3+i), ghostImage[i-1]));
+        ghosts.push(new Ghost(CELL_SIZE * (13+i), CELL_SIZE * (5+i), ghostImage[i-1]));
         
     }
     
