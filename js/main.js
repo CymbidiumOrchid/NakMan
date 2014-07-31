@@ -47,7 +47,8 @@ var playerImage = assetImages.player = new Image();
 assetImages.player.src = "img/player2.png";
 
 var ghostImage = assetImages.ghost = [];
-for (var i = 0; i < GHOSTS_COUNT; i++) {
+var i;
+for (i = 0; i < GHOSTS_COUNT; i += 1) {
     ghostImage[i] = assetImages.ghost[i] = new Image();
     assetImages.ghost[i].src = GHOSTS_AVATARS[i];
 }
@@ -182,18 +183,18 @@ function update() {
             isSameRow = player.row === ghosts[i].row;
             isSameColumn = player.column === ghosts[i].column;
         }  else {
-            if (upDown && player.dirY != -1 && player.dirX == 0) {
+            if (upDown && player.dirY !== -1 && player.dirX === 0) {
                 player.moveUp();
-            } else if (downDown && player.dirY != 1 && player.dirX == 0) {
+            } else if (downDown && player.dirY !== 1 && player.dirX === 0) {
                 player.moveDown();
-            } else if (leftDown && player.dirX != -1 && player.dirY == 0) {
+            } else if (leftDown && player.dirX !== -1 && player.dirY === 0) {
                 player.moveLeft();
-            } else if (rightDown && player.dirX != 1 && player.dirY == 0) {
+            } else if (rightDown && player.dirX !== 1 && player.dirY === 0) {
                 player.moveRight();
             }
         }
 
-        if (ghosts[i].xp % CELL_SIZE == 0 && ghosts[i].yp % CELL_SIZE == 0) {
+        if (ghosts[i].xp % CELL_SIZE === 0 && ghosts[i].yp % CELL_SIZE === 0) {
             updateGhost(ghosts[i]);
 
             isSameRow = player.row == ghosts[i].row;
@@ -219,13 +220,15 @@ function render() {
 }
 
 function updateGhost(ghostElement) {
-    var playerCellX = player.row,
+    var node,
+        playerChangedPos,
+
+        playerCellX = player.row,
         playerCellY = player.column;
 
-    var playerChangedPos = (playerCellX != lastX || playerCellY != lastY);
+    playerChangedPos = (playerCellX !== lastX || playerCellY !== lastY);
     lastX = playerCellX;
     lastY = playerCellY;
-
 
     var lastRow = ghostElement.row,
         lastColumn = ghostElement.column,
@@ -233,13 +236,13 @@ function updateGhost(ghostElement) {
         cx = ghostElement.row = ghostElement.xp / CELL_SIZE;
         cy = ghostElement.column = ghostElement.yp / CELL_SIZE;
 
-    if (!ghostElement.chasing && (ghostElement.dirX != 0 || ghostElement.dirY != 0)) {
+    if (!ghostElement.chasing && (ghostElement.dirX !== 0 || ghostElement.dirY !== 0)) {
         var nextTileFree = false;
 
-        if ((ghostElement.dirY <= -1 && level.cellData[cx][cy - 1] != 0) ||
-            (ghostElement.dirY >= 1 && level.cellData[cx][cy + 1] != 0) ||
-            (ghostElement.dirX <= -1 && level.cellData[cx - 1][cy] != 0) ||
-            (ghostElement.dirX >= 1 && level.cellData[cx + 1][cy] != 0)) {
+        if ((ghostElement.dirY <= -1 && level.cellData[cx][cy - 1] !== 0) ||
+            (ghostElement.dirY >= 1 && level.cellData[cx][cy + 1] !== 0) ||
+            (ghostElement.dirX <= -1 && level.cellData[cx - 1][cy] !== 0) ||
+            (ghostElement.dirX >= 1 && level.cellData[cx + 1][cy] !== 0)) {
             nextTileFree = true;
         }
 
@@ -248,19 +251,21 @@ function updateGhost(ghostElement) {
 
     var nodes = [];
 
-    if (level.cellData[cx + 1][cy] != 0) nodes.push([cx + 1, cy, 1, 0]);
-    if (level.cellData[cx - 1][cy] != 0) nodes.push([cx - 1, cy, -1, 0]);
-    if (level.cellData[cx][cy + 1] != 0) nodes.push([cx, cy + 1, 0, 1]);
-    if (level.cellData[cx][cy - 1] != 0) nodes.push([cx, cy - 1, 0, -1]);
+    if (level.cellData[cx + 1][cy] !== 0) nodes.push([cx + 1, cy, 1, 0]);
+    if (level.cellData[cx - 1][cy] !== 0) nodes.push([cx - 1, cy, -1, 0]);
+    if (level.cellData[cx][cy + 1] !== 0) nodes.push([cx, cy + 1, 0, 1]);
+    if (level.cellData[cx][cy - 1] !== 0) nodes.push([cx, cy - 1, 0, -1]);
 
-    if (nodes.length == 1) {
+    if (nodes.length === 1) {
         ghostElement.dirX = nodes[0][2];
         ghostElement.dirY = nodes[0][3];
     }
     else if (ghostElement.chasing) {
-        var node = nodes[Math.floor(Math.random() * nodes.length)];
-        var deltaY = player.yp < ghostElement.yp ? -1 : 1;
-        var deltaX = player.xp < ghostElement.xp ? -1 : 1;
+        var deltaY, deltaX;
+
+        node = nodes[Math.floor(Math.random() * nodes.length)];
+        deltaY = player.yp < ghostElement.yp ? -1 : 1;
+        deltaX = player.xp < ghostElement.xp ? -1 : 1;
         if (nextTileFree) {
             ghostElement.dirX = deltaX;
             ghostElement.dirY = deltaY;
@@ -270,7 +275,6 @@ function updateGhost(ghostElement) {
         }
     } else {
         var smallest = Infinity;
-        var node;
 
         var i = nodes.length;
         while (--i > -1) {
@@ -311,8 +315,9 @@ function resetGame() {
     score = 0;
     level.reset();
     player.reset();
-    for (var i in ghosts)
+    for (var i in ghosts){
         ghosts[i].reset();
+    }
 }
 
 function showInfo(str) {
@@ -326,7 +331,7 @@ function showInfo(str) {
 }
 
 function makeControls() {
-    var x, y;
+    var x, y, space;
 
     document.addEventListener("touchmove", function (e) {
         e.preventDefault();
@@ -337,8 +342,8 @@ function makeControls() {
 
     w = 120;
     h = 250;
-//  var  space = 50;
 
+    space = 50;
     buttons = document.createElement("div");
     buttons.id = "container";
     buttons.style.width = SCREEN_WIDTH + "px";

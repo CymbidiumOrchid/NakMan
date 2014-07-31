@@ -12,47 +12,37 @@ function Animation(img, w, h, domElem) {
     this.offsetX = 0;
     this.offsetY = 0;
     this.spriteSheetWidth = this.img.width;
-    this.numFrames = Math.floor(this.spriteSheetWidth/this.width);
+    this.numFrames = Math.floor(this.spriteSheetWidth / this.width);
     this.currentFrame = 0;
 
-    if(!this.domElement)
-    {
+    if (!this.domElement) {
         this.domElement = document.createElement('div');
         this.domElement.className = "animation";
-        this.domElement.style.background = 'url('+img.src+')';
-        this.domElement.style.width = this.width+"px";
-        this.domElement.style.height = this.height+"px";
+        this.domElement.style.background = 'url(' + img.src + ')';
+        this.domElement.style.width = this.width + "px";
+        this.domElement.style.height = this.height + "px";
     }
 
-    this.update = function()
-    {
-        if(this.playing)
-        {
+    this.update = function () {
+        if (this.playing) {
             var nextFrame = this.currentFrame + 1;
 
-            if(nextFrame >= this.numFrames)
-            {
-                if(this.looping)
-                {
+            if (nextFrame >= this.numFrames) {
+                if (this.looping) {
                     this.gotoAndStop(0);
-                }
-                else
-                {
+                } else {
                     this.playing = false;
                     this.gotoAndStop(this.numFrames - 1);
                 }
-            }
-            else
-            {
+            } else {
                 this.gotoAndStop(nextFrame);
             }
         }
     };
 
-    this.render = function()
-    {
-        var dom = this.domElement;
-        var offset = this.currentFrame * this.width;
+    this.render = function () {
+        var dom = this.domElement,
+            offset = this.currentFrame * this.width;
 
         dom.style.background = 'url(' + img.src + ')';
         dom.style.width = this.width + "px";
@@ -75,18 +65,15 @@ function Animation(img, w, h, domElem) {
         dom.style.transform += styleStr;
     };
 
-    this.play = function()
-    {
+    this.play = function () {
         this.playing = true;
     };
 
-    this.gotoAndStop = function(framenum)
-    {
+    this.gotoAndStop = function (framenum) {
         this.currentFrame = framenum;
     };
 
-    this.stop = function()
-    {
+    this.stop = function () {
         this.playing = false;
     };
 }
