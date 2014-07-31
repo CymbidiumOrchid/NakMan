@@ -296,7 +296,6 @@ function updateGhost(ghostElement) {
 
 function onGameOver(complete) {
     stopGame();
-
     var str;
     if (complete) {
         str = "<h1>You win! There is no отпуска for them!</h1><p>" + ((isTouch) ? "TOUCH" : "цъкни button") + " to eat again</p>";
@@ -315,6 +314,7 @@ function resetGame() {
     score = 0;
     level.reset();
     player.reset();
+
     for (var i in ghosts){
         ghosts[i].reset();
     }
@@ -419,6 +419,7 @@ function onKeyPress(e) {
 function startGame() {
     if (isPlaying) return;
     isPlaying = true;
+    document.getElementById('music').play();
     document.getElementById("score").innerHTML = "Visual Studios изядени: " + score;
     resetGame();
     gameInterval = setInterval(run, 1);
@@ -426,5 +427,6 @@ function startGame() {
 
 function stopGame() {
     isPlaying = false;
+    document.getElementById('music').pause();
     clearInterval(gameInterval);
 }
