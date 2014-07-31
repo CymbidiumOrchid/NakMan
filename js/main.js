@@ -44,7 +44,7 @@ var gameInterval,
     assetImages = {};
 
 var playerImage = assetImages.player = new Image();
-assetImages.player.src = "img/player2.png";
+assetImages.player.src = "img/nakov.png";
 
 var ghostImage = assetImages.ghost = [];
 var i;
