@@ -119,3 +119,8 @@ div {
     background-color: black;
 }
 
+#paused {
+    text-align: center;
+    color: red;
+}
+
