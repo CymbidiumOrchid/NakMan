@@ -1,8 +1,13 @@
-body
-{
+@font-face {
+    font-family: 'Keep Calm';
+    src: url('../fonts/KeepCalm-Medium.otf');
+    src: local('☺'), url('../fonts/KeepCalm-Medium.otf') format('woff'), url('../fonts/KeepCalm-Medium.ttf') format('truetype');
+}
+
+body {
     margin: 0;
     padding: 0;
-    background-color: #000000;
+    background-image: url('../img/Lightning_Pritzerbe_01_(MK).jpg');
     color: #FFFFFF;
     line-height: 1;
     font-family: Helvetica, Tahoma, Verdana;
@@ -15,21 +20,20 @@ body
 }
 
 h1 {
-    font-size: 120px;
+    font-family: "Keep Calm";
+    font-size: 100px;
     margin: 0;
     padding: 0;
     text-align: center;
 }
 
-p
-{
+p {
     font-size: 35px;
     margin: 0;
     padding: 0;
 }
 
-div
-{
+div {
     -webkit-transition: translateZ(0px);
     -khtml-transition: translateZ(0px);
     -moz-transition: translateZ(0px);
@@ -37,16 +41,14 @@ div
     transition: translateZ(0px);
 }
 
-.animation
-{
+.animation {
     position: absolute;
     left: 0;
     top: 0;
     width: 30px;
 }
 
-.charcontainer
-{
+.charcontainer {
     display: block;
     left: 0px;
     position: absolute;
@@ -65,8 +67,7 @@ div
     transition: opacity 1s ease-in-out;
 }
 
-.keybutton
-{
+.keybutton {
     background-color: #666666;
     border-radius: 10px;
     height: 92px;
@@ -74,26 +75,23 @@ div
     width: 92px;
 }
 
-.pip
-{
+.pip {
     background: url('../img/visual.png') no-repeat #fff;
     display: block;
     left: 0px;
     position: absolute;
     top: 0px;
-    width: 12px!important;
-    height: 12px!important;
+    width: 12px !important;
+    height: 12px !important;
 }
 
-#container
-{
+#container {
     cursor: pointer;
     position: relative;
     margin: 10px auto 0 auto;
 }
 
-#score
-{
+#score {
     cursor: pointer;
     font-size: 24px;
     height: 24px;
@@ -106,8 +104,7 @@ div
     text-align: center;
 }
 
-#info
-{
+#info {
     font-weight: bold;
     text-align: center;
     -webkit-user-select: none;
@@ -118,8 +115,7 @@ div
     vertical-align: middle;
 }
 
-#infobg
-{
+#infobg {
     background-color: black;
 }
 
