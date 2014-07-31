@@ -1,60 +1,61 @@
-
 // game vars
 var gameInterval,
-        score = 0,
-        isPlaying, isKeyDown,
-        lastX, lastY,
-        isSameColumn, isSameRow,
+    score = 0,
+    isPlaying,
+    isKeyDown,
+    lastX,
+    lastY,
+    isSameColumn,
+    isSameRow,
 
 // screen config
-        SCREEN_WIDTH = 640,
-        SCREEN_HEIGHT = 352,
-        CELL_SIZE = 32,
-        GRID_WIDTH = SCREEN_WIDTH / CELL_SIZE,
-        GRID_HEIGHT = SCREEN_HEIGHT / CELL_SIZE,
-        
+    SCREEN_WIDTH = 640,
+    SCREEN_HEIGHT = 352,
+    CELL_SIZE = 32,
+    GRID_WIDTH = SCREEN_WIDTH / CELL_SIZE,
+    GRID_HEIGHT = SCREEN_HEIGHT / CELL_SIZE,
+
 // enemies config
-        GHOSTS_COUNT = 4,
-        GHOSTS_AVATARS = [
-            'img/alex.png',
-            'img/vladog.png',
-            'img/vladok.png',
-			'img/petya.png'
-        ],
+    GHOSTS_COUNT = 4,
+    GHOSTS_AVATARS = [
+        'img/alex.png',
+        'img/vladog.png',
+        'img/vladok.png',
+        'img/petya.png'
+    ],
 
 // timestep
-        t = 0,
-        dt = 10,
-        currentTime = (new Date).getTime(),
-        accumulator = 0,
+    t = 0,
+    dt = 10,
+    currentTime = (new Date()).getTime(),
+    accumulator = 0,
 
 // display surface vars
-        canvas = document.createElement("canvas"),
-        context = canvas.getContext("2d"),
+    canvas = document.createElement("canvas"),
+    context = canvas.getContext("2d"),
 
 // buttons
-        leftButton, rightButton, upButton, downButton,
+    leftButton, rightButton, upButton, downButton,
 
 // input vars
-        leftDown, rightDown, upDown, downDown, isTouch,
+    leftDown, rightDown, upDown, downDown, isTouch,
 
-// preload image resources
-        assetImages = {};
+// reload image resources
+    assetImages = {};
 
-var playerImage = assetImages["player"] = new Image();
-assetImages["player"].src = "img/player2.png";
+var playerImage = assetImages.player = new Image();
+assetImages.player.src = "img/player2.png";
 
-var ghostImage = assetImages["ghost"] = [];
+var ghostImage = assetImages.ghost = [];
 for (var i = 0; i < GHOSTS_COUNT; i++) {
-    ghostImage[i] = assetImages["ghost"][i] = new Image();
-    assetImages["ghost"][i].src = GHOSTS_AVATARS[i];
+    ghostImage[i] = assetImages.ghost[i] = new Image();
+    assetImages.ghost[i].src = GHOSTS_AVATARS[i];
 }
 
-var levelImage = assetImages["level"] = new Image();
-assetImages["level"].src = "img/map.png";
+var levelImage = assetImages.level = new Image();
+assetImages.level.src = "img/map.png";
 
-function init()
-{
+function init() {
     // CANVAS SET UP
     container = document.createElement("div");
     container.id = "container";
@@ -86,14 +87,9 @@ function init()
     // ghost
     ghosts = [];
     for (var i = 1; i <= GHOSTS_COUNT; i++) {
-        ghosts.push(new Ghost(CELL_SIZE * (13+i), CELL_SIZE * (5+i), ghostImage[i-1]));
-        
+        ghosts.push(new Ghost(CELL_SIZE * (10 + i), CELL_SIZE * (4 + i), ghostImage[i - 1]));
+        charcontainer.appendChild(ghosts[i - 1].domElement);
     }
-    
-    for (var i in ghosts) {
-        charcontainer.appendChild(ghosts[i].domElement);
-    }
-    
 
     infobg = document.createElement('div');
     infobg.id = "infobg";
@@ -116,8 +112,7 @@ function init()
     for (var i in ghosts)
         ghosts[i].init();
 
-    if(Modernizr.touch)
-    {
+    if (Modernizr.touch) {
         isTouch = true;
         makeControls();
     }
@@ -125,203 +120,194 @@ function init()
     showInfo("<p>" + ((isTouch) ? "TOUCH" : "цъкни button") + " to start</p>");
 }
 
-function run()
-{
-    var newTime = (new Date).getTime();
-    var deltaTime = (newTime - currentTime);
-    currentTime = newTime;
+function run() {
+    var newTime = (new Date).getTime(),
+        deltaTime = newTime - currentTime;
 
-    if(deltaTime > 25)
-    {
+    if (deltaTime > 25) {
         deltaTime = 25;
     }
 
+    currentTime = newTime;
     accumulator += deltaTime;
 
-    while(accumulator >= dt)
-    {
+    while (accumulator >= dt) {
         accumulator -= dt;
         update();
     }
     render();
 }
 
-function update()
-{
+function update() {
     player.update();
     for (var i in ghosts) {
-        ghosts[i].update();
+        if(ghosts.hasOwnProperty(i)){
+            ghosts[i].update();
+        }
+        if (player.xp % CELL_SIZE === 0 && player.yp % CELL_SIZE === 0) {
+            var cx, cy;
+            cx = player.row = player.xp / CELL_SIZE;
+            cy = player.column = player.yp / CELL_SIZE;
 
-        if(player.xp % CELL_SIZE == 0 && player.yp % CELL_SIZE == 0)
-        {
-            var cx = player.row = player.xp / CELL_SIZE;
-            var cy = player.column = player.yp / CELL_SIZE;
+            if (upDown && player.dirY > -1 && level.cellData[cx][cy - 1] !== 0) {
+                player.moveUp();
+            } else if (downDown && player.dirY < 1 && level.cellData[cx][cy + 1] !== 0) {
+                player.moveDown();
+            } else if (leftDown && player.dirX > -1 && level.cellData[cx - 1][cy] !== 0) {
+                player.moveLeft();
+            } else if (rightDown && player.dirX < 1 && level.cellData[cx + 1][cy] !== 0) {
+                player.moveRight();
+            } else if (player.dirX === 1 && level.cellData[cx + 1][cy] === 0) {
+                player.stopMovement();
+            } else if (player.dirX === -1 && level.cellData[cx - 1][cy] === 0) {
+                player.stopMovement();
+            } else if (player.dirY === 1 && level.cellData[cx][cy + 1] === 0) {
+                player.stopMovement();
+            } else if (player.dirY === -1 && level.cellData[cx][cy - 1] === 0) {
+                player.stopMovement();
+            }
 
-            if(upDown && player.dirY > -1 && level.cellData[cx][cy - 1] != 0) player.moveUp();
-            else if(downDown && player.dirY < 1 && level.cellData[cx][cy + 1] != 0) player.moveDown();
-            else if(leftDown && player.dirX > -1 && level.cellData[cx - 1][cy] != 0) player.moveLeft();
-            else if(rightDown && player.dirX < 1 && level.cellData[cx + 1][cy] != 0) player.moveRight();
-            else if(player.dirX == 1 && level.cellData[cx + 1][cy] == 0) player.stopMovement();
-            else if(player.dirX == -1 && level.cellData[cx - 1][cy] == 0) player.stopMovement();
-            else if(player.dirY == 1 && level.cellData[cx][cy + 1] == 0) player.stopMovement();
-            else if(player.dirY == -1 && level.cellData[cx][cy - 1] == 0) player.stopMovement();
-
-            if(level.cellData[cx][cy] == 1)
-            {
+            if (level.cellData[cx][cy] === 1) {
                 level.pips[cx][cy].munch();
                 level.cellData[cx][cy] = 2;
+
                 ++score;
+
                 document.getElementById("score").innerHTML = "Visual Studious изядени: " + score;
-                if(score == level.totalPips)
-                {
+                if (score === level.totalPips) {
                     onGameOver(true);
                 }
             }
 
-                isSameRow = player.row == ghosts[i].row;
-                isSameColumn = player.column == ghosts[i].column;
-        }
-        else
-        {
-            if(upDown && player.dirY != -1 && player.dirX == 0) player.moveUp();
-            else if(downDown && player.dirY != 1 && player.dirX == 0) player.moveDown();
-            else if(leftDown && player.dirX != -1 && player.dirY == 0) player.moveLeft();
-            else if(rightDown && player.dirX != 1 && player.dirY == 0) player.moveRight();
+            isSameRow = player.row === ghosts[i].row;
+            isSameColumn = player.column === ghosts[i].column;
+        }  else {
+            if (upDown && player.dirY != -1 && player.dirX == 0) {
+                player.moveUp();
+            } else if (downDown && player.dirY != 1 && player.dirX == 0) {
+                player.moveDown();
+            } else if (leftDown && player.dirX != -1 && player.dirY == 0) {
+                player.moveLeft();
+            } else if (rightDown && player.dirX != 1 && player.dirY == 0) {
+                player.moveRight();
+            }
         }
 
-        if(ghosts[i].xp % CELL_SIZE == 0 && ghosts[i].yp % CELL_SIZE == 0)
-        {
+        if (ghosts[i].xp % CELL_SIZE == 0 && ghosts[i].yp % CELL_SIZE == 0) {
             updateGhost(ghosts[i]);
 
             isSameRow = player.row == ghosts[i].row;
             isSameColumn = player.column == ghosts[i].column;
         }
 
-
-        if(isSameRow || isSameColumn)
-        {
+        if (isSameRow || isSameColumn) {
             var dx = Math.abs(player.xp - ghosts[i].xp);
             var dy = Math.abs(player.yp - ghosts[i].yp);
             var dist = Math.sqrt(dx * dx + dy * dy);
 
-            if(dist < CELL_SIZE)
-            {
+            if (dist < CELL_SIZE) {
                 onGameOver(false);
             }
         }
     }
 }
 
-function render()
-{
+function render() {
     player.render();
     for (var i in ghosts)
         ghosts[i].render();
-    
 }
 
-function updateGhost(ghostElement)
-{
-        var playerCellX = player.row;
-        var playerCellY = player.column;
+function updateGhost(ghostElement) {
+    var playerCellX = player.row,
+        playerCellY = player.column;
 
-        var playerChangedPos = (playerCellX != lastX || playerCellY != lastY);
-        lastX = playerCellX;
-        lastY = playerCellY;
+    var playerChangedPos = (playerCellX != lastX || playerCellY != lastY);
+    lastX = playerCellX;
+    lastY = playerCellY;
 
 
-        var lastRow = ghostElement.row;
-        var lastColumn = ghostElement.column;
+    var lastRow = ghostElement.row,
+        lastColumn = ghostElement.column,
 
-        var cx = ghostElement.row = ghostElement.xp / CELL_SIZE;
-        var cy = ghostElement.column = ghostElement.yp / CELL_SIZE;
+        cx = ghostElement.row = ghostElement.xp / CELL_SIZE;
+        cy = ghostElement.column = ghostElement.yp / CELL_SIZE;
 
-        if(!ghostElement.chasing && (ghostElement.dirX != 0 || ghostElement.dirY != 0))
-        {
-            var nextTileFree = false;
+    if (!ghostElement.chasing && (ghostElement.dirX != 0 || ghostElement.dirY != 0)) {
+        var nextTileFree = false;
 
-            if(ghostElement.dirY <= -1 && level.cellData[cx][cy - 1] != 0) nextTileFree = true;
-            else if(ghostElement.dirY >= 1 && level.cellData[cx][cy + 1] != 0) nextTileFree = true;
-            else if(ghostElement.dirX <= -1 && level.cellData[cx - 1][cy] != 0) nextTileFree = true;
-            else if(ghostElement.dirX >= 1 && level.cellData[cx + 1][cy] != 0) nextTileFree = true;
-
-            if(nextTileFree) return;
+        if ((ghostElement.dirY <= -1 && level.cellData[cx][cy - 1] != 0) ||
+            (ghostElement.dirY >= 1 && level.cellData[cx][cy + 1] != 0) ||
+            (ghostElement.dirX <= -1 && level.cellData[cx - 1][cy] != 0) ||
+            (ghostElement.dirX >= 1 && level.cellData[cx + 1][cy] != 0)) {
+            nextTileFree = true;
         }
 
-        var nodes = [];
+        if (nextTileFree) return;
+    }
 
-        if(level.cellData[cx + 1][cy] != 0) nodes.push([cx + 1, cy, 1, 0]);
-        if(level.cellData[cx - 1][cy] != 0) nodes.push([cx - 1, cy, -1, 0]);
-        if(level.cellData[cx][cy + 1] != 0) nodes.push([cx, cy + 1, 0, 1]);
-        if(level.cellData[cx][cy - 1] != 0) nodes.push([cx, cy - 1, 0, -1]);
+    var nodes = [];
 
-        if(nodes.length == 1)
-        {
-            ghostElement.dirX = nodes[0][2];
-            ghostElement.dirY = nodes[0][3];
+    if (level.cellData[cx + 1][cy] != 0) nodes.push([cx + 1, cy, 1, 0]);
+    if (level.cellData[cx - 1][cy] != 0) nodes.push([cx - 1, cy, -1, 0]);
+    if (level.cellData[cx][cy + 1] != 0) nodes.push([cx, cy + 1, 0, 1]);
+    if (level.cellData[cx][cy - 1] != 0) nodes.push([cx, cy - 1, 0, -1]);
+
+    if (nodes.length == 1) {
+        ghostElement.dirX = nodes[0][2];
+        ghostElement.dirY = nodes[0][3];
+    }
+    else if (ghostElement.chasing) {
+        var node = nodes[Math.floor(Math.random() * nodes.length)];
+        var deltaY = player.yp < ghostElement.yp ? -1 : 1;
+        var deltaX = player.xp < ghostElement.xp ? -1 : 1;
+        if (nextTileFree) {
+            ghostElement.dirX = deltaX;
+            ghostElement.dirY = deltaY;
+        } else {
+            ghostElement.dirX = nodes[2];
+            ghostElement.dirY = nodes[3];
         }
-        else if(ghostElement.chasing)
-        {
-            var node = nodes[Math.floor(Math.random() * nodes.length)];
-            var deltaY = player.yp < ghostElement.yp ? -1 : 1;
-            var deltaX = player.xp < ghostElement.xp ? -1 : 1;
-            if (nextTileFree) {
-                ghostElement.dirX = deltaX;
-                ghostElement.dirY = deltaY;
-            } else {
-                ghostElement.dirX = nodes[2];
-                ghostElement.dirY = nodes[3];
-            }
+    } else {
+        var smallest = Infinity;
+        var node;
 
-        }
-        else
-        {
-            var smallest = Infinity;
-            var node;
-
-            var i = nodes.length;
-            while(--i > -1)
-            {
-                var dx = Math.abs(playerCellX - nodes[i][0]);
-                var dy = Math.abs(playerCellY - nodes[i][1]);
-                var dist = Math.sqrt(dx * dx + dy * dy);
-                if(dist < smallest && ((nodes[i][0] != lastRow && nodes[i][1] != lastColumn) || playerChangedPos))
-                {
-                    smallest = dist;
-                    node = nodes[i];
-                }
-            }
-
-            if(node)
-            {
-                ghostElement.dirX = node[2];
-                ghostElement.dirY = node[3];
+        var i = nodes.length;
+        while (--i > -1) {
+            var dx = Math.abs(playerCellX - nodes[i][0]);
+            var dy = Math.abs(playerCellY - nodes[i][1]);
+            var dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < smallest && ((nodes[i][0] != lastRow && nodes[i][1] != lastColumn) || playerChangedPos)) {
+                smallest = dist;
+                node = nodes[i];
             }
         }
+
+        if (node) {
+            ghostElement.dirX = node[2];
+            ghostElement.dirY = node[3];
+        }
+    }
 }
 
-function onGameOver(complete)
-{
+function onGameOver(complete) {
     stopGame();
 
     var str;
-    if(complete)
-    {
+    if (complete) {
         str = "<h1>You win! There is no отпуска for them!</h1><p>" + ((isTouch) ? "TOUCH" : "цъкни button") + " to eat again</p>";
     }
-    else
-    {
+    else {
         str = "<h1>Payday!!!</h1><br /><br /><p>Give us парите!</p><p>We are going в отпуск на мурету!</p><br /><p>" + ((isTouch) ? "touch" : "цъкни button") + " to eat again</p>";
     }
 
     showInfo(str);
     container.addEventListener('click', onClicked, false);
-    if(isTouch) container.addEventListener("touchstart", onClicked, false);
+    if (isTouch) container.addEventListener("touchstart", onClicked, false);
     container.style.cursor = "pointer";
 }
 
-function resetGame()
-{
+function resetGame() {
     score = 0;
     level.reset();
     player.reset();
@@ -329,10 +315,8 @@ function resetGame()
         ghosts[i].reset();
 }
 
-function showInfo(str)
-{
-    if(str)
-    {
+function showInfo(str) {
+    if (str) {
         document.getElementById("info").innerHTML = str;
         info.style.top = (SCREEN_HEIGHT - info.offsetHeight) * 0.5 + "px";
     }
@@ -341,14 +325,19 @@ function showInfo(str)
     infobg.style.opacity = 0.55;
 }
 
-function makeControls()
-{
-    document.addEventListener("touchmove", function(e){e.preventDefault();}, false);
-    document.addEventListener("touchstart", function(e){e.preventDefault();}, false);
+function makeControls() {
+    var x, y;
 
-    var w = 120;
-    var h = 250;
-    var space = 50;
+    document.addEventListener("touchmove", function (e) {
+        e.preventDefault();
+    }, false);
+    document.addEventListener("touchstart", function (e) {
+        e.preventDefault();
+    }, false);
+
+    w = 120;
+    h = 250;
+//  var  space = 50;
 
     buttons = document.createElement("div");
     buttons.id = "container";
@@ -358,25 +347,25 @@ function makeControls()
 
     var button;
 
-    button = new KeyButton((SCREEN_WIDTH * 0.5) - (w * 0.5) - w, h-180);
+    button = new KeyButton((SCREEN_WIDTH * 0.5) - (w * 0.5) - w, h - 180);
     leftButton = button.domElement;
     leftButton.addEventListener("touchstart", onKeyPress, false);
     leftButton.addEventListener("touchend", onKeyPress, false);
     buttons.appendChild(leftButton);
 
-    button = new KeyButton((SCREEN_WIDTH * 0.5) + (w * 0.5), h-180);
+    button = new KeyButton((SCREEN_WIDTH * 0.5) + (w * 0.5), h - 180);
     rightButton = button.domElement;
     rightButton.addEventListener("touchstart", onKeyPress, false);
     rightButton.addEventListener("touchend", onKeyPress, false);
     buttons.appendChild(rightButton);
 
-    button = new KeyButton((SCREEN_WIDTH - w) * 0.5, h-240);
+    button = new KeyButton((SCREEN_WIDTH - w) * 0.5, h - 240);
     upButton = button.domElement;
     upButton.addEventListener("touchstart", onKeyPress, false);
     upButton.addEventListener("touchend", onKeyPress, false);
     buttons.appendChild(upButton);
 
-    button = new KeyButton((SCREEN_WIDTH - w) * 0.5, h-120);
+    button = new KeyButton((SCREEN_WIDTH - w) * 0.5, h - 120);
     downButton = button.domElement;
     downButton.addEventListener("touchstart", onKeyPress, false);
     downButton.addEventListener("touchend", onKeyPress, false);
@@ -385,10 +374,9 @@ function makeControls()
     container.addEventListener("touchstart", onClicked, false);
 }
 
-function onClicked(e)
-{
+function onClicked(e) {
     container.removeEventListener('click', onClicked, false);
-    if(isTouch) container.removeEventListener("touchstart", onClicked, false);
+    if (isTouch) container.removeEventListener("touchstart", onClicked, false);
     container.style.cursor = "default";
 
     startGame();
@@ -396,13 +384,11 @@ function onClicked(e)
     infobg.style.opacity = 0;
 }
 
-function onKeyPress(e)
-{
-    if(!isPlaying && !isKeyDown) onClicked();
+function onKeyPress(e) {
+    if (!isPlaying && !isKeyDown) onClicked();
     isKeyDown = (isTouch) ? (e.type == "touchstart") : (e.type == "keydown");
 
-    switch((isTouch) ? e.target : e.keyCode)
-    {
+    switch ((isTouch) ? e.target : e.keyCode) {
         case KEY_LEFT :
         case leftButton :
             leftDown = isKeyDown;
@@ -425,17 +411,15 @@ function onKeyPress(e)
     }
 }
 
-function startGame()
-{
-    if(isPlaying) return;
+function startGame() {
+    if (isPlaying) return;
     isPlaying = true;
     document.getElementById("score").innerHTML = "Visual Studios изядени: " + score;
     resetGame();
     gameInterval = setInterval(run, 1);
 }
 
-function stopGame()
-{
+function stopGame() {
     isPlaying = false;
     clearInterval(gameInterval);
 }
