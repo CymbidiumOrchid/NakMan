@@ -428,5 +428,6 @@ function startGame() {
 function stopGame() {
     isPlaying = false;
     document.getElementById('music').pause();
+    document.getElementById('debelia').play();
     clearInterval(gameInterval);
 }
