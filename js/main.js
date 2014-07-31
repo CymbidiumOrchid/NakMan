@@ -2,6 +2,7 @@
 var gameInterval,
     score = 0,
     isPlaying,
+    paused,
     isKeyDown,
     lastX,
     lastY,
@@ -407,7 +408,7 @@ function onClicked(e) {
 }
 
 function onKeyPress(e) {
-    if (!isPlaying && !isKeyDown) onClicked();
+    if (!isPlaying && !isKeyDown && !paused) onClicked();
     isKeyDown = (isTouch) ? (e.type == "touchstart") : (e.type == "keydown");
 
     switch ((isTouch) ? e.target : e.keyCode) {
@@ -430,13 +431,19 @@ function onKeyPress(e) {
         case downButton :
             downDown = isKeyDown;
             break;
+            case KEY_P:
+                pauseGame();
+                break;
+           case KEY_R:
+                resumeGame();
+                break;
     }
 }
 
 function startGame() {
     if (isPlaying) return;
     isPlaying = true;
-    document.getElementById("score").innerHTML = "Visual Studios изядени: " + score;
+    document.getElementById("score").innerHTML = "Visual Studious изядени: " + score;
     document.getElementById("highScore").innerHTML = "Рекорд: " + sessionStorage.highscore;
     resetGame();
     gameInterval = setInterval(run, 1);
@@ -445,4 +452,20 @@ function startGame() {
 function stopGame() {
     isPlaying = false;
     clearInterval(gameInterval);
+}
+
+function pauseGame() {
+ paused = true;
+ document.getElementById("paused").innerHTML = "<h2>(Paused)</h2>";
+ return stopGame();
+}
+
+function resumeGame() {
+ if (isPlaying) return;
+ isPlaying = true;
+ paused = false;
+ document.getElementById('music').play();
+ document.getElementById("paused").innerHTML = "<h2>&nbsp;</h2>";
+ document.getElementById("score").innerHTML = "Visual Studious изядени: " + score;
+ gameInterval = setInterval(run, 1);
 }
