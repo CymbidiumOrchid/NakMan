@@ -3,7 +3,6 @@ var gameInterval,
     score = 0,
     isPlaying,
     isKeyDown,
-    paused,
     lastX,
     lastY,
     isSameColumn,
@@ -45,7 +44,7 @@ var gameInterval,
     assetImages = {};
 
 var playerImage = assetImages.player = new Image();
-assetImages.player.src = "img/nakov.png";
+assetImages.player.src = "img/player2.png";
 
 var ghostImage = assetImages.ghost = [];
 var i;
@@ -106,13 +105,20 @@ function init() {
     container.appendChild(info);
 
     scoreContainer = document.createElement('div');
+    highScoreContainer = document.createElement('div');
+
     scoreContainer.id = "score";
+    highScoreContainer.id = "highScore";
+
     scoreContainer.style.width = SCREEN_WIDTH + 'px';
+
     document.body.appendChild(scoreContainer);
+    document.body.appendChild(highScoreContainer);
 
     player.init();
-    for (var i in ghosts)
+    for (var i in ghosts) {
         ghosts[i].init();
+    }
 
     if (Modernizr.touch) {
         isTouch = true;
@@ -120,6 +126,10 @@ function init() {
     }
 
     showInfo("<p>" + ((isTouch) ? "TOUCH" : "цъкни button") + " to start</p>");
+
+    if (!sessionStorage.highscore) {
+        sessionStorage.setItem("highscore", 0);
+    }
 }
 
 function run() {
@@ -297,6 +307,7 @@ function updateGhost(ghostElement) {
 
 function onGameOver(complete) {
     stopGame();
+
     var str;
     if (complete) {
         str = "<h1>You win! There is no отпуска for them!</h1><p>" + ((isTouch) ? "TOUCH" : "цъкни button") + " to eat again</p>";
@@ -309,13 +320,18 @@ function onGameOver(complete) {
     container.addEventListener('click', onClicked, false);
     if (isTouch) container.addEventListener("touchstart", onClicked, false);
     container.style.cursor = "pointer";
+
+    var loadHighscore = sessionStorage.highscore;
+    if(loadHighscore < score){
+        sessionStorage.setItem('highscore', parseInt(score));
+    }
+    loadHighscore.innerHTML = sessionStorage.highscore;
 }
 
 function resetGame() {
     score = 0;
     level.reset();
     player.reset();
-
     for (var i in ghosts){
         ghosts[i].reset();
     }
@@ -391,7 +407,7 @@ function onClicked(e) {
 }
 
 function onKeyPress(e) {
-    if (!isPlaying && !isKeyDown && !paused) onClicked();
+    if (!isPlaying && !isKeyDown) onClicked();
     isKeyDown = (isTouch) ? (e.type == "touchstart") : (e.type == "keydown");
 
     switch ((isTouch) ? e.target : e.keyCode) {
@@ -414,43 +430,19 @@ function onKeyPress(e) {
         case downButton :
             downDown = isKeyDown;
             break;
-        case KEY_P:
-            pauseGame();
-            break;
-        case KEY_R:
-            resumeGame();
-            break;
     }
 }
 
 function startGame() {
     if (isPlaying) return;
     isPlaying = true;
-    document.getElementById('music').play();
-    document.getElementById("score").innerHTML = "Visual Studious изядени: " + score;
+    document.getElementById("score").innerHTML = "Visual Studios изядени: " + score;
+    document.getElementById("highScore").innerHTML = "Рекорд: " + sessionStorage.highscore;
     resetGame();
     gameInterval = setInterval(run, 1);
 }
 
 function stopGame() {
     isPlaying = false;
-    document.getElementById('music').pause();
-    document.getElementById('debelia').play();
     clearInterval(gameInterval);
-}
-
-function pauseGame() {
-    paused = true;
-    document.getElementById("paused").innerHTML = "<h2>(Paused)</h2>";
-    return stopGame();
-}
-
-function resumeGame() {
-    if (isPlaying) return;
-    isPlaying = true;
-    paused = false;
-    document.getElementById('music').play();
-    document.getElementById("paused").innerHTML = "<h2>&nbsp;</h2>";
-    document.getElementById("score").innerHTML = "Visual Studious изядени: " + score;
-    gameInterval = setInterval(run, 1);
 }

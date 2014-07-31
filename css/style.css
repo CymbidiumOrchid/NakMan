@@ -91,16 +91,15 @@ div {
     margin: 10px auto 0 auto;
 }
 
-#score {
-    cursor: pointer;
-    font-size: 24px;
+#score, #highScore{
+    width: 640px;
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-top: 5px;
+    font-size: 22px;
     height: 24px;
     overflow: hidden;
-    padding: 0px;
     position: relative;
-    margin: 0px;
-    margin: auto;
-    margin-top: 5px;
     text-align: center;
 }
 
